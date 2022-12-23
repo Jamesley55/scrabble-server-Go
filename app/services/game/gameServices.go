@@ -30,10 +30,10 @@ func (s *GameService) InitGame(gameOptions models.GameOptions) (*models.Game, er
 	return nil, errors.New("opps error")
 }
 
-func (s *GameService) JoinGame(joinOpt models.JoinMultiplayerOption, isVirtualPlayer bool) *models.Game {
+func (s *GameService) JoinGame(joinOpt models.JoinMultiplayerOption, isVirtualPlayer bool) (*models.Game, error) {
 	game := s.GetGameByID(joinOpt.GameId)
 	if game == nil {
-		return nil
+		return nil, errors.New("herre here")
 	}
 	if game.Capacity < 2 && !isVirtualPlayer {
 		// Container.Get(PlayerService).AddOpponent(joinOpt.PlayerInfo, game)
@@ -44,7 +44,7 @@ func (s *GameService) JoinGame(joinOpt models.JoinMultiplayerOption, isVirtualPl
 	}
 	timeNow := time.Now()
 	game.StartedTime = &timeNow
-	return game
+	return game, errors.New("opps error")
 }
 
 func (s *GameService) HandleMaxSkip(game *models.Game) {
@@ -60,10 +60,10 @@ func (s *GameService) ConvertToSolo(gameId, virtualPlayerName string, virtualPla
 	s.StartGame(gameId)
 }
 
-func (s *GameService) StartGame(gameID string) {
+func (s *GameService) StartGame(gameID string) error {
 	game := s.GetGameByID(gameID)
 	if s.IsDictionnaryDeleted(gameID) {
-		return
+		return errors.New("Dictionnary Deleted")
 	}
 	if game.Mode == "GameModeLog2990" {
 		// Container.Get(ObjectivesService).AddObjectives(game)
@@ -74,6 +74,7 @@ func (s *GameService) StartGame(gameID string) {
 	if game.Opponent.IsVirtual {
 		// go Container.Get(VirtualPlayerService).StartVirtualPlayer(game)
 	}
+	return nil
 }
 
 func (s *GameService) GetGameByID(gameID string) *models.Game {
